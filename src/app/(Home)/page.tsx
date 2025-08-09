@@ -1,4 +1,3 @@
-import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Headphones, Shield, Star, Truck } from "lucide-react";
@@ -38,7 +37,7 @@ export default function Home() {
   ];
 
   return (
-    <Layout>
+    <div>
       {/* Hero Section */}
       <section className="relative bg-gradient-hero min-h-[80vh] flex items-center">
         <div className="absolute inset-0 overflow-hidden">
@@ -79,7 +78,7 @@ export default function Home() {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-foreground mb-4">Why Choose LifeStyle Mart?</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              We're committed to providing you with the best shopping experience and highest quality products.
+              We &apos;re committed to providing you with the best shopping experience and highest quality products.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -114,7 +113,7 @@ export default function Home() {
             ].map((item) => (
               <Card key={item.id} className="product-card group">
                 <CardContent className="p-0">
-                  <img
+                  <Image
                     src={item.image}
                     alt={`Popular product - ${item.name}`}
                     className="w-full h-56 object-cover product-card-image"
@@ -140,7 +139,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-foreground mb-4">Shop by Category</h2>
-            <p className="text-muted-foreground">Find exactly what you're looking for</p>
+            <p className="text-muted-foreground">Find exactly what you&apos;re looking for</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {categories.map((category, index) => (
@@ -177,7 +176,7 @@ export default function Home() {
             ].map((item) => (
               <Card key={item.id} className="product-card group">
                 <CardContent className="p-0">
-                  <img
+                  <Image
                     src={item.image}
                     alt={`Featured product - ${item.name}`}
                     className="w-full h-56 object-cover product-card-image"
@@ -214,7 +213,7 @@ export default function Home() {
             ].map((item) => (
               <Card key={item.id} className="product-card group">
                 <CardContent className="p-0">
-                  <img
+                  <Image
                     src={item.image}
                     alt={`New arrival - ${item.name}`}
                     className="w-full h-56 object-cover product-card-image"
@@ -251,6 +250,6 @@ export default function Home() {
           </Link>
         </div>
       </section>
-    </Layout>
+    </div>
   );
 };
