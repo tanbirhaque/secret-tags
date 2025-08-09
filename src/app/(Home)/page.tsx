@@ -5,7 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import heroImage from "@/assets/hero-lifestyle.jpg";
 
-export default function Home() {
+export default async function Home() {
+
   const features = [
     {
       icon: <Star className="w-6 h-6" />,
@@ -115,6 +116,7 @@ export default function Home() {
                 <CardContent className="p-0">
                   <Image
                     src={item.image}
+                    fill={true}
                     alt={`Popular product - ${item.name}`}
                     className="w-full h-56 object-cover product-card-image"
                     loading="lazy"
@@ -178,6 +180,7 @@ export default function Home() {
                 <CardContent className="p-0">
                   <Image
                     src={item.image}
+                    fill={true}
                     alt={`Featured product - ${item.name}`}
                     className="w-full h-56 object-cover product-card-image"
                     loading="lazy"
@@ -215,6 +218,7 @@ export default function Home() {
                 <CardContent className="p-0">
                   <Image
                     src={item.image}
+                    fill={true}
                     alt={`New arrival - ${item.name}`}
                     className="w-full h-56 object-cover product-card-image"
                     loading="lazy"

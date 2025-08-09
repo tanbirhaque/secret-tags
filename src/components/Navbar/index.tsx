@@ -7,8 +7,15 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 
-const Navbar = () => {
+type AppUser = {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+};
+
+const Navbar = ({ user }: { user: AppUser | null }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const location = usePathname();
 
@@ -50,41 +57,47 @@ const Navbar = () => {
 
                     {/* Desktop Actions */}
                     <div className="hidden md:flex items-center space-x-4">
-                        <Link href="/login">
-                            <Button variant="ghost" size="sm" className="flex items-center space-x-2">
-                                <User className="w-4 h-4" />
-                                <span>Login</span>
-                            </Button>
-                        </Link>
-
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="rounded-full w-8 h-8 p-0">
-                                    <Avatar className="h-8 w-8">
-                                        <AvatarImage src="" alt="User profile" />
-                                        <AvatarFallback>LM</AvatarFallback>
-                                    </Avatar>
+                        {user ?
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="rounded-full w-8 h-8 p-0">
+                                        <Avatar className="h-8 w-8">
+                                            <AvatarImage src="" alt="User profile" />
+                                            <AvatarFallback>LM</AvatarFallback>
+                                        </Avatar>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-56 z-50">
+                                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/profile">Manage my account</Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/profile/orders">My orders</Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/profile/wishlist">Wishlist</Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/profile/settings">Settings</Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={
+                                        () => signOut()
+                                    }>
+                                        Logout
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu> :
+                            <Link href="/login">
+                                <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                                    <User className="w-4 h-4" />
+                                    <span>Login</span>
                                 </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56 z-50">
-                                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem asChild>
-                                    <Link href="/profile">Manage my account</Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                    <Link href="/profile/orders">My orders</Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                    <Link href="/profile/wishlist">Wishlist</Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                    <Link href="/profile/settings">Settings</Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>Logout</DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                            </Link>
+                        }
+
 
                         <Link href="/cart">
                             <Button variant="outline" size="sm" className="flex items-center space-x-2">
