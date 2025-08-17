@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ShoppingCart, Menu, X, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -17,9 +17,21 @@ type AppUser = {
 
 const Navbar = ({ user }: { user: AppUser | null }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [hideNav, setHideNav] = useState(false);
     const location = usePathname();
+    const isMainAdmin = location.includes('/admin');
+
 
     const isActive = (path: string) => location === path;
+
+    useEffect(() => {
+        if (isMainAdmin) {
+            setHideNav(true);
+        }
+        else {
+            setHideNav(false);
+        }
+    }, [isMainAdmin]);
 
     const navLinks = [
         { name: "Home", path: "/" },
@@ -28,7 +40,7 @@ const Navbar = ({ user }: { user: AppUser | null }) => {
     ];
 
     return (
-        <nav className="border-b border-border sticky top-0 z-50 backdrop-blur-sm bg-background/80">
+        <nav className={`border-b border-border sticky top-0 z-50 backdrop-blur-sm bg-background/80 ${hideNav ? "hidden" : "block"}`}>
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
