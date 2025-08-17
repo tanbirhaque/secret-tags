@@ -14,37 +14,30 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     // }
 
     return (
-        <html>
-            <body>
-                <main>
-                    <SidebarProvider>
-                        <div className="flex min-h-screen w-full">
-                            <AppSidebar />
-                            <SidebarInset>
-                                <header className="bg-card border-b border-border">
-                                    <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <SidebarTrigger className="-ml-1" />
-                                            <Link href="/" className="text-2xl font-bold text-primary">
-                                                LifeStyle Mart
-                                            </Link>
-                                            <span className="text-muted-foreground">/ Admin Panel</span>
-                                        </div>
-                                        <Button variant="outline" asChild>
-                                            <Link href="/">Back to Store</Link>
-                                        </Button>
-                                    </div>
-                                </header>
-
-                                <div className="container mx-auto px-4 py-8">
-                                    {children}
-                                </div>
-                            </SidebarInset>
+        <SidebarProvider>
+            <div className="flex min-h-screen w-full">
+                <AppSidebar />
+                <SidebarInset>
+                    <header className="bg-card border-b border-border">
+                        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <SidebarTrigger className="-ml-1" />
+                                <Link href="/" className="text-2xl font-bold text-primary">
+                                    LifeStyle Mart
+                                </Link>
+                                <span className="text-muted-foreground">/ Admin Panel</span>
+                            </div>
+                            <Button variant="outline" asChild>
+                                <Link href="/">Back to Store</Link>
+                            </Button>
                         </div>
-                    </SidebarProvider>
+                    </header>
 
-                </main>
-            </body>
-        </html>
+                    <div className="container mx-auto px-4 py-8">
+                        {children}
+                    </div>
+                </SidebarInset>
+            </div>
+        </SidebarProvider>
     )
 }

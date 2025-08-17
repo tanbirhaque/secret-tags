@@ -44,7 +44,6 @@ export default async function Home() {
         <div className="absolute inset-0 overflow-hidden">
           <Image
             src={heroImage}
-
             alt="LifeStyle Mart - Premium Lifestyle Products"
             className="w-full h-full object-cover opacity-20"
           />
@@ -98,7 +97,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* Popular Products */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -112,15 +111,18 @@ export default async function Home() {
               { id: 3, name: "Cozy Throw", price: "$39", image: "/placeholder.svg?height=300&width=300" },
               { id: 4, name: "Ceramic Vase", price: "$29", image: "/placeholder.svg?height=300&width=300" },
             ].map((item) => (
-              <Card key={item.id} className="product-card group">
+              <Card key={item.id} className="product-card group p-0 overflow-hidden">
                 <CardContent className="p-0">
-                  <Image
-                    src={item.image}
-                    fill={true}
-                    alt={`Popular product - ${item.name}`}
-                    className="w-full h-56 object-cover product-card-image"
-                    loading="lazy"
-                  />
+                  <div>
+                    <Image
+                      src={item.image}
+                      height={256}
+                      width={256}
+                      alt={`Popular product - ${item.name}`}
+                      className="w-full h-56 object-cover product-card-image"
+                      loading="lazy"
+                    />
+                  </div>
                   <div className="p-4">
                     <h3 className="font-semibold text-foreground">{item.name}</h3>
                     <p className="text-muted-foreground mt-1">{item.price}</p>
@@ -176,15 +178,17 @@ export default async function Home() {
               { id: 7, name: "Scented Candle", price: "$19", image: "/placeholder.svg?height=300&width=300" },
               { id: 8, name: "Marble Tray", price: "$34", image: "/placeholder.svg?height=300&width=300" },
             ].map((item) => (
-              <Card key={item.id} className="product-card group">
+              <Card key={item.id} className="product-card group p-0 overflow-hidden">
                 <CardContent className="p-0">
-                  <Image
-                    src={item.image}
-                    fill={true}
-                    alt={`Featured product - ${item.name}`}
-                    className="w-full h-56 object-cover product-card-image"
-                    loading="lazy"
-                  />
+                  <div className="relative w-full h-56">
+                    <Image
+                      src={item.image}
+                      fill={true}
+                      alt={`Featured product - ${item.name}`}
+                      className="w-full h-56 object-cover product-card-image"
+                      loading="lazy"
+                    />
+                  </div>
                   <div className="p-4">
                     <h3 className="font-semibold text-foreground">{item.name}</h3>
                     <p className="text-muted-foreground mt-1">{item.price}</p>
@@ -214,15 +218,18 @@ export default async function Home() {
               { id: 11, name: "Glass Terrarium", price: "$45", image: "/placeholder.svg?height=300&width=300" },
               { id: 12, name: "Planter Duo", price: "$39", image: "/placeholder.svg?height=300&width=300" },
             ].map((item) => (
-              <Card key={item.id} className="product-card group">
+              <Card key={item.id} className="product-card group p-0 overflow-hidden">
                 <CardContent className="p-0">
-                  <Image
-                    src={item.image}
-                    fill={true}
-                    alt={`New arrival - ${item.name}`}
-                    className="w-full h-56 object-cover product-card-image"
-                    loading="lazy"
-                  />
+                  <div>
+                    <Image
+                      src={item.image}
+                      height={256}
+                      width={256}
+                      alt={`New arrival - ${item.name}`}
+                      className="w-full h-56 object-cover product-card-image"
+                      loading="lazy"
+                    />
+                  </div>
                   <div className="p-4">
                     <h3 className="font-semibold text-foreground">{item.name}</h3>
                     <p className="text-muted-foreground mt-1">{item.price}</p>
