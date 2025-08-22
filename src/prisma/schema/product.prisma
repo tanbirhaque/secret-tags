@@ -1,0 +1,40 @@
+// product.prisma
+
+model Product {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name           String
+  description    String
+  images         TProductImage[]
+  category       String
+  tags           String[]
+  features       String[]
+  specifications TProductSpecification
+  stock          Int
+  price          Float
+  discount       Float                 @default(0)
+
+  listed Boolean @default(false)
+
+  // TODO: Implement rating count here
+
+  @@map("products")
+}
+
+type TProductImage {
+  public_id  String
+  secure_url String
+  height     Int
+  width      Int
+  thumbnail  Boolean
+}
+
+type TProductSpecification {
+  material String?
+  height   Int?
+  width    Int?
+  weight   Int?
+  color    String?
+}
