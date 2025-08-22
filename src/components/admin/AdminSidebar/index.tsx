@@ -47,8 +47,8 @@ export function AppSidebar() {
                     <SidebarGroupLabel>Admin</SidebarGroupLabel>
                     <SidebarGroupContent className="space-y-1">
                         {items.map((item) => (
-                            <Collapsible defaultOpen className="group/collapsible">
-                                <SidebarMenuItem key={item.title} className="list-none">
+                            <Collapsible key={item.title} defaultOpen className="group/collapsible">
+                                <SidebarMenuItem className="list-none">
                                     <CollapsibleTrigger asChild>
                                         <SidebarMenuButton asChild isActive={isActive(item.url)} className={`${isActive(item.url) ? '!text-primary' : ''}`}>
                                             <Link href={item.url} passHref>
