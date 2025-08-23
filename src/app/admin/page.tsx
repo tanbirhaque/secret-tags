@@ -1,14 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, ShoppingCart, Users, BarChart3, Settings } from "lucide-react";
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/admin/AdminSidebar";
-// import { usePathname } from "next/navigation";
 import Link from "next/link";
 const Admin = () => {
-    // const location = usePathname();
-    // const isMainAdmin = location === '/admin';
-
     const navigationItems = [
         { path: '/admin/products', icon: Package, label: 'Products', description: 'Manage product catalog' },
         { path: '/admin/orders', icon: ShoppingCart, label: 'Orders', description: 'View and manage orders' },

@@ -22,3 +22,24 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: false, error }, { status: 500 });
     }
 }
+
+// delete multiple images
+export async function DELETE(req: Request) {
+    try {
+        const { public_ids } = await req.json();
+
+        const results = await Promise.all(
+            public_ids.map((id: string) => cloudinary.uploader.destroy(id))
+        );
+
+        const failedDeletes = results.filter((result) => result.result !== "ok");
+
+        if (failedDeletes.length === 0) {
+            return NextResponse.json({ success: true });
+        }
+
+        return NextResponse.json({ success: false, errors: failedDeletes }, { status: 400 });
+    } catch (error) {
+        return NextResponse.json({ success: false, error }, { status: 500 });
+    }
+}

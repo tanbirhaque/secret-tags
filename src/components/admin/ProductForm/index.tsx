@@ -4,69 +4,112 @@ import { Input } from "@/components/ui/input";
 import Select from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 import { CldUploadButton, CloudinaryUploadWidgetResults, CloudinaryUploadWidgetInfo } from 'next-cloudinary';
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Card } from "@/components/ui/card";
-import { CloudUploadIcon, CopyIcon, X } from "lucide-react";
+import { CloudUploadIcon, CopyIcon, GalleryThumbnailsIcon, X } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from 'react-toastify';
 import { TProductImage } from "@prisma/client";
+import { Badge } from "@/components/ui/badge";
+
+const toastOptions = {
+    position: "bottom-right" as const,
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: false,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+};
 
 const ProductForm = () => {
     const [uploadedImages, setUploadedImages] = useState<TProductImage[]>([]);
+    const [isUploading, setIsUploading] = useState(false);
     const [deletingImage, setDeletingImage] = useState<boolean>(false);
     const [price, setPrice] = useState<number>(0);
     const [discount, setDiscount] = useState<number>(0);
+    const [isPending, startTransition] = useTransition();
+
     console.log("Uploaded images:", uploadedImages);
 
-    const handleSubmit = (formData: FormData) => {
-        const data = {
-            images: uploadedImages,
-            name: formData.get("name"),
-            description: formData.get("description"),
-            tags: formData.getAll("tags"),
-            features: formData.getAll("features"),
-            specifications: {
-                material: formData.get("material"),
-                height: formData.get("height"),
-                width: formData.get("width"),
-                weight: formData.get("weight"),
-                color: formData.get("color"),
-            },
-            stock: formData.get("stock"),
-            price: formData.get("price"),
-            discount: formData.get("discount"),
-        };
+    // Filter the uploaded image and match the public id to make the thumbnail true
+    const handleMakeThumbnail = (public_id: string) => {
+        const updatedImages = uploadedImages
+            .map((image) => ({ ...image, thumbnail: image.public_id === public_id }))
+            .sort((a, b) => (b.thumbnail ? 1 : 0) - (a.thumbnail ? 1 : 0)); // Thumbnail first
 
-        if (data.images.length < 1) {
-            toast.error('Upload at least one image.', {
-                position: "bottom-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
+        setUploadedImages(updatedImages);
+        toast.success("Thumbnail set successfully.", toastOptions);
+    };
+
+
+    const handleSubmit = (formData: FormData) => {
+        startTransition(async () => {
+            formData.append("images", JSON.stringify(uploadedImages));
+
+            if (uploadedImages.length < 1) {
+                toast.error("Upload at least one image.", toastOptions);
+                return;
+            }
+            console.log("Submitting form with data:", formData.entries());
+            // Call API to create product
+            const res = await fetch(`/api/product`, {
+                method: "POST",
+                body: formData,
             });
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                toast.error(errorData.message || 'Failed to create product.', toastOptions);
+                return;
+            }
+
+            const data = await res.json();
+            // console.log("API response data:", data);
+
+            toast.success(`${data.message}`, toastOptions);
+        })
+    }
+
+    const handleCancelSubmission = async () => {
+        startTransition(() => {
+            // Reset form state
+            resetForm();
+        });
+
+        toast.info("Form submission cancelled.", toastOptions);
+    };
+
+    const resetForm = async () => {
+        console.log("Resetting form...");
+        // delete all cloudinary images and reset form
+        const public_ids = uploadedImages.map((image) => image.public_id);
+        if (public_ids.length > 0) {
+            const res = await fetch(`/api/delete-image`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ public_ids }),
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                toast.success("All images deleted successfully.", toastOptions);
+            } else {
+                toast.error("Failed to delete some images.", toastOptions);
+            }
         }
 
-
-
-        // toast.success('Product created successfully!', {
-        //     position: "bottom-right",
-        //     autoClose: 5000,
-        //     hideProgressBar: false,
-        //     closeOnClick: false,
-        //     pauseOnHover: true,
-        //     draggable: true,
-        //     progress: undefined,
-        //     theme: "light",
-        // });
-
-        console.log("Form submitted with data:", data);
+        // Reset form state
+        setUploadedImages([]);
+        setPrice(0);
+        setDiscount(0);
+        setIsUploading(false);
+        setDeletingImage(false);
     }
 
     const handleImageDeleteFromCloudinary = async (public_id: string) => {
@@ -146,12 +189,26 @@ const ProductForm = () => {
                                                             <X />
                                                         </Button>
                                                     </div>
+                                                    {
+                                                        !image.thumbnail &&
+                                                        <div className="absolute top-0 left-0">
+                                                            <Button onClick={() => handleMakeThumbnail(image.public_id)} className="size-fit !p-0.5 rounded-sm">
+                                                                <GalleryThumbnailsIcon />
+                                                            </Button>
+                                                        </div>
+                                                    }
                                                     {deletingImage ? <LoadingSpinner /> :
                                                         <Button variant={"outline"} size={"icon"}>
                                                             <CopyIcon />
                                                         </Button>
                                                     }
                                                 </div>
+                                                {
+                                                    image.thumbnail &&
+                                                    <div className="absolute group-hover:hidden flex top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2">
+                                                        <Badge>Thumbnail</Badge>
+                                                    </div>
+                                                }
                                                 <Image src={image.secure_url} width={image.width} height={image.height} alt="" className="h-24 w-24 object-cover rounded-sm border" />
                                             </div>
                                         ))}
@@ -172,6 +229,18 @@ const ProductForm = () => {
                                     className={"bg-primary text-white flex gap-2 rounded-2xl py-2 px-5 cursor-pointer"}
                                     uploadPreset="secret-tags_dev_product"
                                     options={{ maxFiles: 5 }}
+                                    onClick={() => setIsUploading(true)}
+                                    onAbort={() => {
+                                        setIsUploading(false);
+                                        console.log("Cloudinary upload aborted");
+                                    }}
+                                    onError={(error) => {
+                                        setIsUploading(false);
+                                        if (error) {
+                                            console.error("Cloudinary upload error:", error);
+                                            toast.error("Failed to upload image.", toastOptions);
+                                        }
+                                    }}
                                     onSuccess={(result: CloudinaryUploadWidgetResults) => {
                                         const info = result.info as CloudinaryUploadWidgetInfo;
                                         setUploadedImages((prev) => [...prev, {
@@ -181,11 +250,18 @@ const ProductForm = () => {
                                             width: info.width,
                                             thumbnail: false,
                                         }]);
+                                        setIsUploading(false);
                                         console.log("Cloudinary upload successful:", result);
                                     }}
                                 >
-                                    <CloudUploadIcon className="h-6 w-6 text-white" />
-                                    <span>Upload Image</span>
+                                    {isUploading ? (
+                                        <LoadingSpinner />
+                                    ) : (
+                                        <>
+                                            <CloudUploadIcon className="h-6 w-6 text-white" />
+                                            <span>Upload Image</span>
+                                        </>
+                                    )}
                                 </CldUploadButton>
                             </div>
                         )
@@ -326,9 +402,13 @@ const ProductForm = () => {
                 </div>
 
                 <div className="flex justify-end gap-4">
-                    <Button type="submit" className="mt-4">Submit</Button>
-                    <Button type="button" variant="outline" className="mt-4">Save as Draft</Button>
-                    <Button type="button" variant="outline" className="mt-4">Cancel</Button>
+                    <Button type="submit" className="mt-4">
+                        {isPending ? <LoadingSpinner /> : "Submit"}
+                    </Button>
+                    <Button disabled type="button" variant="outline" className="mt-4">Save as Draft</Button>
+                    <Button onClick={handleCancelSubmission} type="reset" variant="outline" className="mt-4">
+                        {isPending ? <LoadingSpinner /> : "Cancel"}
+                    </Button>
                 </div>
             </form>
         </div >

@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { AxiosError } from 'axios';
 import { NextResponse } from 'next/server';
+import { ZodError } from 'zod';
 
 export class ExtendedError extends Error {
     statusCode: number;
@@ -23,6 +24,9 @@ export function handleError(error: unknown, defaultStatusCode = 500) {
     if (error instanceof ExtendedError) {
         statusCode = error.statusCode;
         errorMessage = error.message;
+    } else if (error instanceof ZodError) {
+        statusCode = 400;
+        errorMessage = error.issues.map((e) => e.message).join(", ");
     } else if (error instanceof AxiosError) {
         console.error(error.response?.data);
         statusCode = error.response?.status || defaultStatusCode;
@@ -58,5 +62,9 @@ export function handleError(error: unknown, defaultStatusCode = 500) {
         console.error(error);
     }
 
-    return NextResponse.json({ message: errorMessage, success: false, status: statusCode });
+    return NextResponse.json({
+        message: errorMessage,
+        success: false,
+        status: statusCode,
+    });
 }
