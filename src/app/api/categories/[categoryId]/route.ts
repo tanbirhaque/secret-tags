@@ -5,7 +5,7 @@ import { RoleType } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 // DELETE category
-export async function DELETE(req: Request, { params }: { params: { categoryId: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ categoryId: string }> }) {
     try {
         const session = await auth();
         const userId = session?.user?.id;
@@ -19,7 +19,7 @@ export async function DELETE(req: Request, { params }: { params: { categoryId: s
             throw new ExtendedError("Forbidden", 403);
         }
 
-        const { categoryId } = params;
+        const { categoryId } = await params;
 
         const isCategoryExist = await prisma.category.findFirst({
             where: {

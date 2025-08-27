@@ -5,39 +5,25 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { measurementSystemOptions } from '@/utils/categoryUtils';
 import { toastOptions } from '@/utils/toastOptions';
-import { useEffect, useState, useTransition } from 'react';
+import { Category } from '@prisma/client';
+import { useRouter } from 'next/navigation';
+import { useState, useTransition } from 'react';
 import Select from 'react-select';
 import { toast } from 'react-toastify';
 
-const CategoryForm = () => {
+const CategoryForm = ({ categories }: { categories: Category[] }) => {
+    const router = useRouter();
     const [isPending, startTransition] = useTransition();
-    const [parentOptions, setParentOptions] = useState([]);
     const [selectedMeasurementSystem, setSelectedMeasurementSystem] = useState<{ value: string; label: string }[]>([]);
     const [selectedParent, setSelectedParent] = useState<{ value: string; label: string } | null>(null);
 
-    // Fetch categories for parent category selection if needed
-    const fetchCategories = async () => {
-        const res = await fetch('/api/categories');
-        if (!res.ok) {
-            console.error("Failed to fetch categories:", res.statusText);
-            return;
-        }
-        const data = await res.json();
-        console.log("Fetched categories:", data);
-        // Map categories to select options
-        const options = data.categories.map((cat: any) => ({
-            value: cat.slug,
-            label: cat.name,
-        }));
-        setParentOptions(options);
-    };
-    useEffect(() => {
-        fetchCategories();
-    }, []);
-
-    const handleSubmit = async (formData: FormData) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        const form = e.currentTarget;
+        const formData = new FormData(form)
         startTransition(async () => {
             const parentSlug = selectedParent?.value
+            console.log("Parent slug", parentSlug);
             formData.append('parentSlug', parentSlug as string)
             // Submit the form data
             const res = await fetch('/api/categories', {
@@ -51,19 +37,17 @@ const CategoryForm = () => {
                 return;
             } else {
                 toast.success("Category created successfully.", toastOptions);
-                await fetchCategories(); // Refresh parent categories
-                formData.delete('name');
                 setSelectedMeasurementSystem([]);
                 setSelectedParent(null);
+                form.reset();
+                router.refresh()
             }
         });
     }
 
     return (
         <form className="space-y-4" onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            handleSubmit(formData);
+            handleSubmit(e);
         }}>
             <label htmlFor="name" className='text-sm'>Category Name</label>
             <Input
@@ -89,7 +73,9 @@ const CategoryForm = () => {
                 name='parent'
                 value={selectedParent}
                 onChange={(selected) => setSelectedParent(selected as { value: string; label: string } | null)}
-                options={parentOptions}
+                options={categories.map((cat) => {
+                    return { value: cat.slug, label: cat.name }
+                })}
                 isClearable
             />
 

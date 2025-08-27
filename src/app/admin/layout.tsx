@@ -2,6 +2,7 @@ import { AppSidebar } from '@/components/admin/AdminSidebar'
 import { Button } from '@/components/ui/button'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { auth } from '@/config/auth'
+import { RoleType } from '@prisma/client'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
@@ -9,15 +10,15 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     const session = await auth()
     const userRole = session?.user?.role
 
-    // if (!session || userRole !== 'ADMIN') {
-    //     redirect('/')
-    // }
+    if (!session || userRole !== RoleType.ADMIN) {
+        redirect('/')
+    }
 
     return (
         <SidebarProvider>
-            <div className="flex min-h-screen w-full">
+            <div className="flex min-h-screen w-full overflow-hidden">
                 <AppSidebar />
-                <SidebarInset>
+                <SidebarInset className="overflow-auto">
                     <header className="bg-card border-b border-border">
                         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
                             <div className="flex items-center gap-3">
