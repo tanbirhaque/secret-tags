@@ -2,15 +2,21 @@ import { auth } from "@/config/auth";
 import { prisma } from "@/prisma";
 import { ExtendedError, handleError } from "@/utils/errorhandler";
 import { ProductInput, productSchema } from "@/validation/product.validation";
+import { RoleType } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
     try {
         const session = await auth();
         const userId = session?.user?.id;
+        const userRole = session?.user?.role;
 
         if (!userId) {
             throw new ExtendedError("Unauthorized", 401);
+        }
+
+        if (userRole !== RoleType.ADMIN) {
+            throw new ExtendedError("Forbidden", 403);
         }
 
         const formData = await req.formData();

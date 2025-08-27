@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import Select from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 import { CldUploadButton, CloudinaryUploadWidgetResults, CloudinaryUploadWidgetInfo } from 'next-cloudinary';
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { Card } from "@/components/ui/card";
 import { CloudUploadIcon, CopyIcon, GalleryThumbnailsIcon, X } from "lucide-react";
 import Image from "next/image";
@@ -14,19 +14,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from 'react-toastify';
 import { TProductImage } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
-
-const toastOptions = {
-    position: "bottom-right" as const,
-    autoClose: 5000,
-    hideProgressBar: false,
-    closeOnClick: false,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
-    theme: "light",
-};
+import { toastOptions } from "@/utils/toastOptions";
 
 const ProductForm = () => {
+    const formRef = useRef<HTMLFormElement>(null)
     const [uploadedImages, setUploadedImages] = useState<TProductImage[]>([]);
     const [isUploading, setIsUploading] = useState(false);
     const [deletingImage, setDeletingImage] = useState<boolean>(false);
@@ -70,6 +61,11 @@ const ProductForm = () => {
 
             const data = await res.json();
             // console.log("API response data:", data);
+            // Reset form state
+            setUploadedImages([]);
+            setPrice(0);
+            setDiscount(0);
+            formRef.current?.reset();
 
             toast.success(`${data.message}`, toastOptions);
         })
@@ -166,11 +162,13 @@ const ProductForm = () => {
 
     return (
         <div>
-            <form onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target as HTMLFormElement);
-                handleSubmit(formData);
-            }}
+            <form
+                ref={formRef}
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.target as HTMLFormElement);
+                    handleSubmit(formData);
+                }}
                 className="space-y-4 flex flex-col"
             >
 
@@ -289,6 +287,7 @@ const ProductForm = () => {
                     <Select
                         name="category"
                         options={categories}
+                        isClearable={true}
                     />
 
                     <label htmlFor="tags" className="text-sm">Product Tags</label>
@@ -406,6 +405,7 @@ const ProductForm = () => {
                         {isPending ? <LoadingSpinner /> : "Submit"}
                     </Button>
                     <Button disabled type="button" variant="outline" className="mt-4">Save as Draft</Button>
+
                     <Button onClick={handleCancelSubmission} type="reset" variant="outline" className="mt-4">
                         {isPending ? <LoadingSpinner /> : "Cancel"}
                     </Button>

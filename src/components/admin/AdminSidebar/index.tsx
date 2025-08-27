@@ -1,6 +1,6 @@
 "use client";
 
-import { Package, ShoppingCart, Users, BarChart3, Settings, SquarePen, PackagePlus, ChevronRight } from "lucide-react";
+import { Package, ShoppingCart, Users, BarChart3, Settings, SquarePen, PackagePlus, ChevronRight, Shapes } from "lucide-react";
 import {
     Sidebar,
     SidebarContent,
@@ -26,6 +26,7 @@ const items = [
             { title: "Edit Product", url: "/admin/products/edit", icon: SquarePen },
         ]
     },
+    { title: "Categories", url: "/admin/categories", icon: Shapes },
     { title: "Orders", url: "/admin/orders", icon: ShoppingCart },
     { title: "Customers", url: "/admin/customers", icon: Users },
     { title: "Analytics", url: "/admin/analytics", icon: BarChart3 },
