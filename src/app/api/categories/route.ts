@@ -25,7 +25,7 @@ export async function POST(req: Request) {
         const name = formData.get("name")?.toString() ?? "";
         const slug = name.toLowerCase().replace(/\s+/g, "-");
         const measurementSystem = formData.getAll("measurementSystem").map((m) => m.toString());
-        const parentSlug = formData.get("parentSlug")?.toString() || null;
+        const parentSlug = formData.get("parent")?.toString() || null;
 
         const rawData: CategoryInput = {
             name,
@@ -65,7 +65,7 @@ export async function POST(req: Request) {
 }
 
 // get categories
-export async function GET(req: Request) {
+export async function GET() {
     try {
         const session = await auth();
         const userId = session?.user?.id;

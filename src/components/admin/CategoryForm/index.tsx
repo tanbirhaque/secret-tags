@@ -37,6 +37,8 @@ const CategoryForm = () => {
 
     const handleSubmit = async (formData: FormData) => {
         startTransition(async () => {
+            const parentSlug = selectedParent?.value
+            formData.append('parentSlug', parentSlug as string)
             // Submit the form data
             const res = await fetch('/api/categories', {
                 method: 'POST',
